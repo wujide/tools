@@ -5,7 +5,7 @@
 
 
 import unittest
-from mydict import Dict
+from demo.mydict import Dict
 
 
 class TestDict(unittest.TestCase):
