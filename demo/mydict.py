@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 # @Time: 2018/11/3
 # @Author: wujide
+import logging
+from log_demo import Logger
+log = Logger('yyx.log', logging.ERROR, logging.DEBUG)
 
 
 class Dict(dict):
@@ -39,6 +42,7 @@ class Dict(dict):
 
     def __setattr__(self, key, value):
         self[key] = value
+        log.info(value)
 
 
 if __name__ == '__main__':
