@@ -33,6 +33,7 @@ def md5sum(filename, blocksize=65536):
 
 
 def build_dup_dict(dir_path, pattern='*.*'):
+    # todo: 解决pattern 同时匹配jpg，png图片，以解决mac 中.DS_Store 问题
     def save(file):
         hash = md5sum(file)
         if hash not in dup.keys():
@@ -41,7 +42,7 @@ def build_dup_dict(dir_path, pattern='*.*'):
             dup[hash].append(file)
 
     p = Path(dir_path)
-    for item in p.rglob( pattern):
+    for item in p.rglob(pattern):
         save(str(item))
 
 
@@ -66,13 +67,13 @@ def find_dup_files():
         for file in files[1:]:
             try:
                 move_files(file)
+                print("Moving...")
             except shutil.Error:
-                # 如果存在多个相同文件，则重命名后再次移动
-                # print("Destination path(files) already exists!")
+                # 如果存在多个重复文件，则重命名后再次移动
                 file_split = os.path.split(file)
                 file_split_text = os.path.splitext(file)
                 file_rename = file_split_text[0] + '_' + time.strftime('%Y%m%d%H%M%S') + '_' + str(random.random()) + file_split_text[1]
-                print("Rename and Moving：", file_split[1], '======>', os.path.split(file_rename)[1])
+                print("遇到多个重复文件，需要重命名再移动：", file_split[1], '======>', os.path.split(file_rename)[1])
                 os.renames(file, file_rename)
                 move_files(file_rename)
 
