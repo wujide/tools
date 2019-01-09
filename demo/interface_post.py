@@ -15,7 +15,7 @@ def application(environ, start_response):
 
     request_body = environ["wsgi.input"].read(
         int(environ.get("CONTENT_LENGTH", 0)))
-    request_body = json.loads(request_body)
+    request_body = pickle.loads(request_body)
 
     name = request_body["name"]
     no = request_body["no"]
