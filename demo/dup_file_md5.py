@@ -5,8 +5,10 @@ import time
 from pathlib import Path
 
 dup = {}
-PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
-DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
+# PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
+# DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
+PHOTO_PATH = 'E:\\test_files'
+DUP_FILE_PATH = 'E:\\duplicated_files'
 
 
 def move_files(duplicate_files):
@@ -46,9 +48,10 @@ def main():
             try:
                 move_files(file)
             except shutil.Error:
+                # 如果有相同文件名的文件，则重命后再次移动
                 print("Destination path(files) already exists!")
-                print("rename the exists files: ", file)
                 file_rename = file + time.strftime('%Y%m%d %H%M%S')
+                print("rename：", file, '======>', file_rename)
                 os.renames(file, file_rename)
                 move_files(file_rename)
 
