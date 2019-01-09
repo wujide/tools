@@ -3,6 +3,7 @@ import os
 import shutil
 import time
 from pathlib import Path
+# from decorator_time import get_time
 
 dup = {}
 # PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
@@ -17,7 +18,6 @@ DUP_FILE_PATH = 'E:\\duplicated_files'
 
 """
 # todo: 加上用时统计
-# todo: 加上log记录到文件
 
 
 def move_files(duplicate_files):
@@ -32,7 +32,7 @@ def md5sum(filename, blocksize=65536):
     return hash.hexdigest()
 
 
-def build_dup_dict(dir_path, pattern='*.jpg'):
+def build_dup_dict(dir_path, pattern='*.*'):
     def save(file):
         hash = md5sum(file)
         if hash not in dup.keys():
@@ -45,6 +45,17 @@ def build_dup_dict(dir_path, pattern='*.jpg'):
         save(str(item))
 
 
+def get_time(func):
+    def wraper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        print("Spend(seconds):", end_time - start_time)
+        return result
+    return wraper
+
+
+@get_time
 def find_dup_files():
     def get_duplicate():
         return {k: v for k, v in dup.items() if len(v) > 1}
@@ -58,7 +69,7 @@ def find_dup_files():
                 move_files(file)
             except shutil.Error:
                 # 如果存在多个相同文件，则重命名后再次移动
-                print("Destination path(files) already exists!")
+                # print("Destination path(files) already exists!")
                 file_rename = file + time.strftime('%Y%m%d%H%M%S')
                 print("rename：", file, '======>', file_rename)
                 os.renames(file, file_rename)

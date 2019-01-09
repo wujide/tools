@@ -11,7 +11,7 @@ def get_time(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print("Spend:", end_time - start_time)
+        print("Spend(seconds):", end_time - start_time)
         return result
     return wraper
 
@@ -30,4 +30,4 @@ def _generator(n):
 
 
 _list(10000)
-_generator(10000)
+# _generator(10000)
