@@ -1,5 +1,6 @@
 import hashlib
 import os
+import random
 import shutil
 import time
 from pathlib import Path
@@ -17,7 +18,6 @@ DUP_FILE_PATH = 'E:\\duplicated_files'
 3. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（默认值），并改名为原文件名 + 年月日时分秒
 
 """
-# todo: 加上用时统计
 
 
 def move_files(duplicate_files):
@@ -63,15 +63,16 @@ def find_dup_files():
     build_dup_dict(PHOTO_PATH)
     for hash, files in get_duplicate().items():
         print("重复文件为：", "{}: {}".format(hash, files))
-        print("Moving file===: ", files[1], "==> ", DUP_FILE_PATH)
         for file in files[1:]:
             try:
                 move_files(file)
             except shutil.Error:
                 # 如果存在多个相同文件，则重命名后再次移动
                 # print("Destination path(files) already exists!")
-                file_rename = file + time.strftime('%Y%m%d%H%M%S')
-                print("rename：", file, '======>', file_rename)
+                file_split = os.path.split(file)
+                file_split_text = os.path.splitext(file)
+                file_rename = file_split_text[0] + '_' + time.strftime('%Y%m%d%H%M%S') + '_' + str(random.random()) + file_split_text[1]
+                print("Rename and Moving：", file_split[1], '======>', os.path.split(file_rename)[1])
                 os.renames(file, file_rename)
                 move_files(file_rename)
 
