@@ -47,18 +47,6 @@ def find_duplicated_files(file, dir_second):
             # print(file, "comparing in:", path)
             find_duplicated_files(file, x)
 
-    # for x in os.listdir(dir_second):
-    #     path = dir_second + '/' + x
-    #     if os.path.isfile(path):
-    #         if file == x:
-    #             print(x, 'is duplicated in :', path)
-    #             print(x, 'is moved to: duplicated_files')
-    #             move_files(path)
-    #             continue
-    #     else:
-    #         # print(file, "comparing in:", path)
-    #         find_duplicated_files(file, path)
-
 
 def move_files(duplicate_files):
     dup_file_path = '/Users/wujide/Documents/duplicated_files'
