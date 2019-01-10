@@ -13,9 +13,11 @@ PHOTO_PATH = 'E:\\test_files'
 DUP_FILE_PATH = 'E:\\duplicated_files'
 
 """
-1. 支持文件名不同但实际是同一文件的去重
+1. 支持文件名不同但实际是同一文件的去重，暂时只支持jpg，png格式
 2. 支持嵌套文件夹的去重
-3. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（默认值），并改名为原文件名 + 年月日时分秒
+3. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（默认值），并改名为原文件名_年月日时分秒_随机值
+4. 用户输入需要去重的路径 和 存放重复文件的路径
+5. 实测结果：
 
 """
 
@@ -33,7 +35,6 @@ def md5sum(filename, blocksize=65536):
 
 
 def build_dup_dict(dir_path, pattern='*.*'):
-    # todo: 解决pattern 同时匹配jpg，png图片，以解决mac 中.DS_Store 问题
     def save(file):
         hash = md5sum(file)
         if hash not in dup.keys():
@@ -78,5 +79,15 @@ def find_dup_files():
                 move_files(file_rename)
 
 
+def file_stat(file_dir):
+    p = Path(file_dir)
+    ps = p.rglob('*.*')
+
+
 if __name__ == '__main__':
-    find_dup_files()
+    # todo: 加入对输入文件夹下子文件夹，文件个数的统计
+    # todo: 加入对用户输入路径的判断，不存在则创建
+    while True:
+        FILE_PATH = input("请输入文件路径： ")
+        FILE_DUP_PATH = input("请输入重复文件保存路径： ")
+        find_dup_files()
