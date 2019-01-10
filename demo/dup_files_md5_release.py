@@ -7,10 +7,12 @@ from pathlib import Path
 # from decorator_time import get_time
 
 dup = {}
+dir_num = 0
+file_num = 0
 # PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
 # DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
 PHOTO_PATH = 'E:\\test_files'
-DUP_FILE_PATH = 'E:\\duplicated_files'
+DUP_FILE_PATH = 'C:\\duplicate_files'
 
 """
 1. 支持文件名不同但实际是同一文件的去重，暂时只支持jpg，png格式
@@ -22,8 +24,8 @@ DUP_FILE_PATH = 'E:\\duplicated_files'
 """
 
 
-def move_files(duplicate_files):
-    return shutil.move(duplicate_files, DUP_FILE_PATH)
+def move_files(duplicate_files, file_dup_path):
+    return shutil.move(duplicate_files, file_dup_path)
 
 
 def md5sum(filename, blocksize=65536):
@@ -58,16 +60,16 @@ def get_time(func):
 
 
 @get_time
-def find_dup_files():
+def find_dup_files(file_dir, dup_file_dir):
     def get_duplicate():
         return {k: v for k, v in dup.items() if len(v) > 1}
 
-    build_dup_dict(PHOTO_PATH)
+    build_dup_dict(file_dir)
     for hash, files in get_duplicate().items():
         print("重复文件为：", "{}: {}".format(hash, files))
         for file in files[1:]:
             try:
-                move_files(file)
+                move_files(file, dup_file_dir)
                 print("Moving...")
             except shutil.Error:
                 # 如果存在多个重复文件，则重命名后再次移动
@@ -76,18 +78,35 @@ def find_dup_files():
                 file_rename = file_split_text[0] + '_' + time.strftime('%Y%m%d%H%M%S') + '_' + str(random.random()) + file_split_text[1]
                 print("遇到多个重复文件，需要重命名再移动：", file_split[1], '======>', os.path.split(file_rename)[1])
                 os.renames(file, file_rename)
-                move_files(file_rename)
+                move_files(file_rename, dup_file_dir)
 
 
-def file_stat(file_dir):
-    p = Path(file_dir)
-    ps = p.rglob('*.*')
+def file_stat(dir):
+    global dir_num, file_num
+    for x in os.listdir(dir):
+        path = dir + '/' + x
+        if os.path.isdir(path):
+            dir_num += 1
+            file_stat(path)
+        # elif os.path.isfile(path) and not path.endswith(('.DS_Store', '.dat')):  # 如果需要排除文件用这个
+        elif os.path.isfile(path):
+            file_num += 1
+    return dir_num, file_num
 
 
 if __name__ == '__main__':
-    # todo: 加入对输入文件夹下子文件夹，文件个数的统计
-    # todo: 加入对用户输入路径的判断，不存在则创建
+    # num = file_stat(PHOTO_PATH)
+    # print(PHOTO_PATH, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
     while True:
-        FILE_PATH = input("请输入文件路径： ")
-        FILE_DUP_PATH = input("请输入重复文件保存路径： ")
-        find_dup_files()
+        file_dir = input("请输入文件路径： ")
+        file_dup_path = input("请输入重复文件保存路径： ")
+        # if not os.path.exists(file_dup_path):
+        #     file_dup_path = 'C:\\duplicate_files'
+        #     os.mkdir(file_dup_path) # for windows
+        num = file_stat(file_dir)
+        print(file_dir, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
+        find_dup_files(file_dir, file_dup_path)
+        if input("是否继续Y/N,回车继续：").upper() == 'N':
+            print('2秒钟后关闭')
+            time.sleep(2)
+            break
