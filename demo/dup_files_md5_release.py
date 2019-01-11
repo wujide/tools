@@ -22,7 +22,7 @@ file_num = 0
 
 
 def move_files(duplicate_files, file_dup_path):
-    os.chmod(file_dup_path, stat.S_IWOTH) # 更改文件属性，使其它用户具有写权限
+    os.chmod(file_dup_path, stat.S_IWOTH)  # 更改文件属性，使其它用户具有写权限
     return shutil.move(duplicate_files, file_dup_path)
 
 
