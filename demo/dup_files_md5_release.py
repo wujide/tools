@@ -2,6 +2,7 @@ import hashlib
 import os
 import random
 import shutil
+import stat
 import time
 from pathlib import Path
 # from decorator_time import get_time
@@ -9,10 +10,6 @@ from pathlib import Path
 dup = {}
 dir_num = 0
 file_num = 0
-# PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
-# DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
-PHOTO_PATH = 'E:\\test_files'
-DUP_FILE_PATH = 'C:\\duplicate_files'
 
 """
 1. 支持文件名不同但实际是同一文件的去重，暂时只支持jpg，png格式
@@ -25,6 +22,7 @@ DUP_FILE_PATH = 'C:\\duplicate_files'
 
 
 def move_files(duplicate_files, file_dup_path):
+    os.chmod(file_dup_path, stat.S_IWOTH) # 更改文件属性，使其它用户具有写权限
     return shutil.move(duplicate_files, file_dup_path)
 
 
@@ -97,14 +95,23 @@ def file_stat(dir):
 if __name__ == '__main__':
     # num = file_stat(PHOTO_PATH)
     # print(PHOTO_PATH, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
+    # PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
+    # DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
+    file_dir = 'E:\\test_files'
+    file_dup_path = 'E:\\duplicated_files'
+    # todo: 将打印信息保存到文件中
     while True:
-        file_dir = input("请输入文件路径： ")
-        file_dup_path = input("请输入重复文件保存路径： ")
+        # file_dir = input("请输入文件路径： ")
+        # file_dup_path = input("请输入重复文件保存路径： ")
         # if not os.path.exists(file_dup_path):
         #     file_dup_path = 'C:\\duplicate_files'
         #     os.mkdir(file_dup_path) # for windows
         num = file_stat(file_dir)
         print(file_dir, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
+        if input("是否开始扫描Y/N,回车继续：").upper() == 'N':
+            print('2秒钟后关闭')
+            time.sleep(2)
+            break
         find_dup_files(file_dir, file_dup_path)
         if input("是否继续Y/N,回车继续：").upper() == 'N':
             print('2秒钟后关闭')
