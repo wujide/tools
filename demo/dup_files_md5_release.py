@@ -3,9 +3,11 @@ import os
 import random
 import shutil
 import stat
+import sys
 import time
 from pathlib import Path
-# from decorator_time import get_time
+from demo.log_redirection import Logger
+sys.stdout = Logger('dup_file_log.log')
 
 dup = {}
 dir_num = 0
@@ -97,15 +99,14 @@ if __name__ == '__main__':
     # print(PHOTO_PATH, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
     # PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
     # DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
-    file_dir = 'E:\\test_files'
-    file_dup_path = 'E:\\duplicated_files'
-    # todo: 将打印信息保存到文件中
+    # file_dir = 'E:\\test_files'
+    # file_dup_path = 'E:\\duplicated_files'
     while True:
-        # file_dir = input("请输入文件路径： ")
-        # file_dup_path = input("请输入重复文件保存路径： ")
+        file_dir = input("请输入文件路径： ")
+        file_dup_path = input("请输入重复文件保存路径： ")
         # if not os.path.exists(file_dup_path):
-        #     file_dup_path = 'C:\\duplicate_files'
-        #     os.mkdir(file_dup_path) # for windows
+        #     file_dup_path = file_dup_path or 'C:\\duplicate_files'
+        #     os.mkdir(file_dup_path)  # for windows
         num = file_stat(file_dir)
         print(file_dir, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
         if input("是否开始扫描Y/N,回车继续：").upper() == 'N':
@@ -114,6 +115,6 @@ if __name__ == '__main__':
             break
         find_dup_files(file_dir, file_dup_path)
         if input("是否继续Y/N,回车继续：").upper() == 'N':
-            print('2秒钟后关闭')
-            time.sleep(2)
+            print('3秒钟后关闭, Log 文件保存在当前路径下 dup_file_log.log 中')
+            time.sleep(3)
             break
