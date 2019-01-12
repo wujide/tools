@@ -2,51 +2,51 @@ import hashlib
 import os
 import random
 import shutil
-import stat
 import sys
 import time
 from pathlib import Path
 from demo.log_redirection import Logger
-sys.stdout = Logger('dup_file_log.log')
+# sys.stdout = Logger('dup_file_log.txt')
 
 dup = {}
 dir_num = 0
 file_num = 0
 
 """
-1. 支持文件名不同但实际是同一文件的去重，暂时只支持jpg，png格式
+1. 支持文件名不同但实际是同一文件的去重
 2. 支持嵌套文件夹的去重
 3. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（默认值），并改名为原文件名_年月日时分秒_随机值
-4. 用户输入需要去重的路径 和 存放重复文件的路径
-5. 实测结果：
+4. 用户需要输入去重的路径 和 存放重复文件的路径
+5. 为了提高速度，暂时将[.mp4]文件排除；
+6. 实测结果：
 
 """
 
 
-def move_files(duplicate_files, file_dup_path):
-    os.chmod(file_dup_path, stat.S_IWOTH)  # 更改文件属性，使其它用户具有写权限
-    return shutil.move(duplicate_files, file_dup_path)
+def move_files(src, dest_path):
+    # os.chmod(dest_path, stat.S_IWOTH)  # 更改文件属性，使其它用户具有写权限
+    return shutil.move(src, dest_path)
 
 
 def md5sum(filename, blocksize=65536):
-    hash = hashlib.md5()
+    hash_handle = hashlib.md5()
     with open(filename, "rb") as f:
         for block in iter(lambda: f.read(blocksize), b""):
-            hash.update(block)
-    return hash.hexdigest()
+            hash_handle.update(block)
+    return hash_handle.hexdigest()
 
 
 def build_dup_dict(dir_path, pattern='*.*'):
     def save(file):
-        hash = md5sum(file)
-        if hash not in dup.keys():
-            dup[hash] = [file]
+        hash_val = md5sum(file)
+        if hash_val not in dup.keys():
+            dup[hash_val] = [file]
         else:
-            dup[hash].append(file)
-
+            dup[hash_val].append(file)
     p = Path(dir_path)
     for item in p.rglob(pattern):
-        save(str(item))
+        if os.path.splitext(item)[1] not in ['.mp4']:
+            save(str(item))
 
 
 def get_time(func):
@@ -81,10 +81,10 @@ def find_dup_files(file_dir, dup_file_dir):
                 move_files(file_rename, dup_file_dir)
 
 
-def file_stat(dir):
+def file_stat(dir_src):
     global dir_num, file_num
-    for x in os.listdir(dir):
-        path = dir + '/' + x
+    for x in os.listdir(dir_src):
+        path = dir_src + '/' + x
         if os.path.isdir(path):
             dir_num += 1
             file_stat(path)
@@ -95,10 +95,12 @@ def file_stat(dir):
 
 
 if __name__ == '__main__':
-    # num = file_stat(PHOTO_PATH)
-    # print(PHOTO_PATH, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
-    # PHOTO_PATH = '/Users/wujide/Documents/照片备份/'
-    # DUP_FILE_PATH = '/Users/wujide/Documents/duplicated_files/'
+    # file_src = '/Users/wujide/Documents/照片备份/'
+    # file_dup_path = '/Users/wujide/Documents/duplicated_files/'
+    # num = file_stat(file_src)
+    # print(file_src, "文件夹下共有：", num[0], "个文件夹和 ", num[1], "个文件")
+    # find_dup_files(file_src, file_dup_path)
+
     # file_dir = 'E:\\test_files'
     # file_dup_path = 'E:\\duplicated_files'
     while True:
@@ -113,8 +115,13 @@ if __name__ == '__main__':
             print('2秒钟后关闭')
             time.sleep(2)
             break
+        print("扫描中......请稍候")
         find_dup_files(file_dir, file_dup_path)
         if input("是否继续Y/N,回车继续：").upper() == 'N':
-            print('3秒钟后关闭, Log 文件保存在当前路径下 dup_file_log.log 中')
+            print('3秒钟后关闭...')
+            # print('3秒钟后关闭, Log 文件保存在当前路径下 dup_file_log.txt 中')
             time.sleep(3)
+            # sys.stdout = Logger('dup_file_log.txt')
+            # time.sleep(3)
             break
+
