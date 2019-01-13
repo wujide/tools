@@ -5,6 +5,7 @@
 
 import sys
 import os
+from time import sleep
 
 
 class Logger(object):
@@ -18,3 +19,21 @@ class Logger(object):
 
     def flush(self):
         pass
+
+
+def log_to_file(msg):
+    temp = sys.stdout
+    with open('dup_file_log.txt', 'a+') as f:
+        sys.stdout = f
+        print(msg)
+    sys.stdout = temp
+    print(456)
+
+
+if __name__ == '__main__':
+    sleep(2)
+    log_to_file('123')
+    sleep(2)
+    print('789')
+    sleep(2)
+
