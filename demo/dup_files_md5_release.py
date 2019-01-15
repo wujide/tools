@@ -11,14 +11,17 @@ from demo.log_redirection import Logger
 dup = {}
 dir_num = 0  # 文件夹个数
 file_num = 0  # 文件个数
-
+IGNORE_PREFIX_TUP = ('System',)  # 前缀
+IGNORE_POSTFIX_TUP = ('.mp4', '.BIN', '.DS_Store')  # 后缀
 """
-1. 支持文件名不同但实际是同一文件的去重
+Notes：
+1. 支持文件改名后的去重（使用md5算法）
 2. 支持嵌套文件夹的去重
-3. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（默认值），并改名为原文件名_年月日时分秒_随机值
-4. 用户需要输入去重的路径 和 存放重复文件的路径
-5. 为了提高速度，暂时将[.mp4]文件排除；
-6. 实测结果：
+3. 支持mac，windows
+4. 多个相同的文件，会将除第一个文件外的文件移动到指定文件夹（用户自己创建并输入），并改名为：原文件名_年月日时分秒_随机值
+5. 用户需要输入去重的绝对路径 和 存放重复文件的路径，如对demo 文件夹下的所有的子文件夹和文件去重：d:\demo, d:\demo_bak
+6. 为了提高速度，暂时将'.mp4'文件排除，根据需要自行添加或删除前缀，后缀常量：IGNORE_PREFIX_TUP，IGNORE_POSTFIX_TUP；
+7. 效率还未优化，实测结果：
 
 """
 
@@ -86,10 +89,17 @@ def find_dup_files(file_dir, dup_file_dir):
                 move_files(file_rename, dup_file_dir)
 
 
+# 遍历文件夹
+def get_listdir(path):
+    for f in os.listdir(path):
+        if not f.startswith(IGNORE_PREFIX_TUP) and not f.endswith(IGNORE_POSTFIX_TUP):
+            yield f
+
+
 # 统计文件夹与文件个数
 def file_stat(dir_src):
     global dir_num, file_num
-    for x in os.listdir(dir_src):
+    for x in get_listdir(dir_src):
         path = dir_src + '/' + x
         if os.path.isdir(path):
             dir_num += 1
