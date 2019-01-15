@@ -41,6 +41,16 @@ def md5sum(filename, blocksize=65536):
     return md5.hexdigest()
 
 
+def save_dup(item):
+    with open('dup_file_dup.py', 'a') as f:
+        f.write(item)
+
+
+def read_dup():
+    with open('dup_file_dup.py', 'r') as f:
+        return f.read()
+
+
 # 建立文件的md5:文件路径的对应关系，多个相同文件则为md5:[文件列表]
 def build_dup_dict(dir_path, pattern='*.*'):
     def save(file):
@@ -51,8 +61,9 @@ def build_dup_dict(dir_path, pattern='*.*'):
             dup[hash_val].append(file)
     p = Path(dir_path)
     for item in p.rglob(pattern):
-        if os.path.splitext(item)[1] not in ['.mp4']:
+        if os.path.splitext(item)[1] not in ['.mp4', '.BIN', '.DS_Store']:
             save(str(item))
+    save_dup(str(dup))
 
 
 # 统计执行时间
@@ -104,7 +115,6 @@ def file_stat(dir_src):
         if os.path.isdir(path):
             dir_num += 1
             file_stat(path)
-        # elif os.path.isfile(path) and not path.endswith(('.DS_Store', '.dat')):  # 如果需要排除文件用这个
         elif os.path.isfile(path):
             file_num += 1
     return dir_num, file_num
@@ -139,3 +149,7 @@ if __name__ == '__main__':
             time.sleep(3)
             break
 
+        else:   # 重置全局参数
+            dup = {}
+            dir_num = 0
+            file_num = 0
