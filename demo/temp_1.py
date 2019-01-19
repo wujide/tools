@@ -3,8 +3,38 @@
 # @Time: 2018/12/22
 # @Author: wujide
 import os
+from functools import reduce
 
 
+def merge_dup(dup_list):
+    # dup_merge = {'0': 0}
+
+    def f(d1, d2):
+        print(list(d2.keys())[0])
+        # print(list(d1.keys()))
+        if list(d2.keys())[0] not in list(d1.keys()):
+            d1[list(d2.keys())[0]] = list(d2.values())
+            print("d1:", d1)
+        else:
+            d1[list(d2.keys())[0]].append(list(d2.values())[0])
+            print(d1)
+    d = reduce(f, dup_list)
+    # print(d)
+    return d
+
+
+dl = ({'1': 11}, {'2': 22}, {'3': 33})
+
+merge_dup(dl)
+
+
+
+
+
+
+
+
+'''
 def search_file(abspath, str):
     for x in os.listdir(abspath):
         # print(str, x)
@@ -48,3 +78,4 @@ sys.stdout = Logger('a.txt')
 print(path)
 print(os.path.dirname(__file__))
 print('------------------')
+'''

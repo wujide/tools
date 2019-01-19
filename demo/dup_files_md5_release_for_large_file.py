@@ -61,6 +61,7 @@ def merge_dup(dup_list):
         else:
             dup_merge[dup_1.keys].append(dup_1.values)
     map(f, dup_list)
+    return dup_merge
 
 
 # 建立文件的md5:文件路径的对应关系，多个相同文件则为md5:[文件列表]
