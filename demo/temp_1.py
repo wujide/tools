@@ -11,6 +11,8 @@ def merge_dup(dup_list):
 
     def f(d1, d2):
         print(list(d2.keys())[0])
+        print(d1)
+        print(list(d1.keys()))
         # print(list(d1.keys()))
         if list(d2.keys())[0] not in list(d1.keys()):
             d1[list(d2.keys())[0]] = list(d2.values())
@@ -23,9 +25,9 @@ def merge_dup(dup_list):
     return d
 
 
-dl = ({'1': 11}, {'2': 22}, {'3': 33})
+dlist = ({'1': 11}, {'2': 22}, {'3': 33})
 
-merge_dup(dl)
+merge_dup(dlist)
 
 
 
