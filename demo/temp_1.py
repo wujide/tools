@@ -6,24 +6,6 @@ import os
 from functools import reduce
 
 
-def square(x):
-    """
-    Squares x.
-    square(2)4>>> square(-2)4>>> square(5)25
-    """
-    return x * x
-
-
-if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
-
-
-
-
-
-
-
 '''
 def search_file(abspath, str):
     for x in os.listdir(abspath):
