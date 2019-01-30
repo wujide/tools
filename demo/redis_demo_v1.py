@@ -12,6 +12,8 @@ class RedisManager:
         local_config = ReadConfig()
         host = local_config.get_redis('host')
         password = local_config.get_redis('password')
+        # 使用connection pool来管理对一个redis server的所有连接，避免每次建立、释放连接的开销。
+        # 默认，每个Redis实例都会维护一个自己的连接池。可以直接建立一个连接池，然后作为参数Redis，这样就可以实现多个Redis实例共享一个连接池。
         pool = redis.ConnectionPool(host=host, password=password, db=db_num, decode_responses=True)
         self.r = redis.Redis(connection_pool=pool)
 
@@ -35,20 +37,28 @@ class RedisManager:
     def set_name_string(self, name, value):
         return self.r.set(name, value)
 
+    # 经测试，可用于hash, string, list
     def del_name(self, name):
         self.r.delete(name)
+
+    def del_name_hash(self, name, key):
+        self.r.hdel(name, key)
+
 
 '''
 # hash
 rd = RedisManager(db_num=15)
+# redis-py默认在执行每次请求都会创建（连接池申请连接）和断开（归还连接池）一次连接操作，
+# 如果想要在一次请求中指定多个命令，则可以使用pipline实现一次请求指定多个命令，并且默认情况下一次pipline 是原子性操作。
+pipe = r.pipeline(transaction=True)
+
 v = rd.get_name_hash('test_set')
 print(v)
 v_all = rd.get_name_hash_all('123456')
 print(v_all)
 
-'''
-'''
-# hash
+pipe.execute()
+
 rd = RedisManager(db_num=2)
 v = rd.get_name_hash('offline:promot_user_key:401115537', 'coin_total')
 print(v)
@@ -102,8 +112,11 @@ v_modify = [
     "ctime": "2018-07-27 13:42:58",
     "mtime": "2019-01-02 14:32:36"
   }]
-v_string_set = rd.set_name_string('task_conf_hot', str(v_modify))
-print(rd.get_name_string('task_conf_hot'))
+# v_string_set = rd.set_name_string('task_conf_hot', str(v_modify))
+# print(rd.get_name_string('task_conf_hot'))
+
+rd.del_name('list:task:init_redo')
+# rd.del_name_hash('123456', 'attr_2')
 
 # list
 # rd = RedisManager(db_num=1)
