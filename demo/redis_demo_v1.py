@@ -27,8 +27,11 @@ class RedisManager:
     def get_name_string(self, name):
         return self.r.get(name)
 
-    def get_name_list(self, name):
+    def get_list_len(self, name):
         return self.r.llen(name)
+
+    def get_list_item(self, name, start, end):
+        return self.r.lrange(name, start, end)
 
     def set_name_hash(self, name, value):
         return self.r.set(name, value)
@@ -43,6 +46,18 @@ class RedisManager:
 
     def del_name_hash(self, name, key):
         self.r.hdel(name, key)
+
+# list
+rd = RedisManager(db_num=3)
+# v_list = rd.get_list_len('activity:carve_up:bonus_pool')
+v_list = rd.get_list_item('activity:carve_up:bonus_pool', 0, -1)
+print(len(v_list))
+print(v_list.count('1'))
+print(v_list.count('2'))
+print(v_list.count('3'))
+print(v_list.count('4'))
+# print(v_list)
+
 
 
 '''
@@ -66,6 +81,7 @@ v_all = rd.get_name_hash_all('offline:promot_user_key:401115537')
 print(v_all)
 '''
 
+'''
 # string
 rd = RedisManager(db_num=15)
 v_string = rd.get_name_string('task_conf_hot')
@@ -117,8 +133,4 @@ v_modify = [
 
 rd.del_name('list:task:init_redo')
 # rd.del_name_hash('123456', 'attr_2')
-
-# list
-# rd = RedisManager(db_num=1)
-# v_list = rd.get_name_list('list:app_distribute')
-# print(v_list)
+'''
